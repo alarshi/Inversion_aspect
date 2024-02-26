@@ -1,0 +1,138 @@
+
+set World builder file                     = simple.wb
+set Use years in output instead of seconds = true
+set Adiabatic surface temperature = 1613
+set Output directory                       = output_map
+
+subsection Adiabatic conditions model
+  subsection Compute profile
+    set Function expression = if(x > 1500000,1.0,0.0); 0
+    set Composition reference profile = function
+  end
+
+end
+subsection Time stepping
+  set List of model names    = conduction time step, inversion
+end
+subsection Boundary velocity model
+  set Zero velocity boundary indicators = 1
+end
+
+subsection Boundary velocity model
+  set Tangential velocity boundary indicators = 0, 2, 3
+end
+
+subsection Mesh refinement
+  set Initial global refinement = 7
+#  set Initial adaptive refinement = 4
+#  set Strategy = viscosity 
+end
+
+subsection Postprocess
+  set List of postprocessors = velocity residual statistics
+#  subsection Visualization
+#    set Output format = vtu
+#    set Interpolate output = false
+#    set List of output variables = adiabat, named additional outputs, thermal expansivity, viscosity
+#  end
+  subsection Velocity residual statistics
+    set Data directory = ./
+    set Data file name = observed_vel_angle20_thickness100.txt
+  end
+
+
+end
+
+
+subsection Compositional fields
+  set Number of fields = 2
+  set Names of fields  = plastic_strain, plate
+end
+
+subsection Material model
+  set Model name = visco plastic
+
+  set Material averaging = harmonic average
+
+  subsection Visco Plastic
+
+    set Reference temperature = 273
+    set Minimum strain rate = 1.e-20
+    set Reference strain rate = 1.e-15
+    set Minimum viscosity = 1e20
+    set Maximum viscosity = 1e25
+
+    set Define thermal conductivities = true
+    set Thermal conductivities        = 2.5
+    set Densities                     = 2800
+    set Heat capacities               = 750.
+    set Thermal expansivities         = 4e-5  # parameter 2
+
+    set Viscosity averaging scheme = harmonic
+    set Viscous flow law           = dislocation
+
+    set Prefactors for dislocation creep          = 8.57e-24
+    set Stress exponents for dislocation creep    =      4.
+    set Activation energies for dislocation creep =   223.e3
+    set Activation volumes for dislocation creep  =      0.0
+
+    set Angles of internal friction               =   20
+    set Cohesions                                 =    4.e6
+
+    set Strain weakening mechanism                  = plastic weakening with plastic strain only
+    set Start plasticity strain weakening intervals = 0.1
+    set End plasticity strain weakening intervals  =  1.0
+    set Cohesion strain weakening factors           = 0.1
+    set Friction strain weakening factors           = 0.1
+
+    set Use plastic damper                          = true
+    set Plastic damper viscosity                    = 5e20
+
+  end
+end
+
+#subsection Material model
+#  set Model name = simple
+#  subsection Simple model
+#    set Reference temperature = 1613
+#    set Viscosity = 1e21
+#    set Thermal conductivity = 1e-06
+#    set Density differential for compositional field 1 = 500
+#  end
+#
+#end
+
+set End time = 0
+subsection Geometry model
+  set Model name = box
+  subsection Box
+    set X extent = 1500e3
+    set Y extent = 200e3
+  end
+
+end
+
+subsection Gravity model
+  set Model name = vertical
+end
+
+subsection Initial temperature model
+  set Model name = world builder
+end
+
+subsection Initial composition model
+  set List of model names = world builder
+end
+
+subsection Solver parameters
+  subsection Matrix Free
+    set Output details = true
+  end
+  subsection Stokes solver parameters
+    set Stokes solver type = block GMG
+    set Number of cheap Stokes solver steps             = 200
+    set Maximum number of expensive Stokes solver steps = 0
+    set Linear solver tolerance                         = 1e-6
+    set GMRES solver restart length                     = 100
+  end
+end
