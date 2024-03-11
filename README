@@ -1,0 +1,9 @@
+This repository includes the python script and the ASPECT input files to generate a probablistic posterior distribution of the input parameters using the PyMC library.
+
+Here is the brief description of the files:
+
+1) Timo.py       : This is the python script that calls ASPECT many times to find the posterior distribution of thermal expansivity and plate thickness
+2) Timo_angle.py : Same as the Timo.py, but for the inversion of internal angle of friction and plate thickness. Internal angle of friction is much less senstive to the ouput velocities compared to the thermal expansivity
+3) 3.prm         : ASPECT input parameter file that is used with timo_angle.py
+4) 4.prm         : ASPECT input parameter file that is used with timo.py
+5) observed*.txt : the resepective velocity data files against which the velocity residual is computed.
